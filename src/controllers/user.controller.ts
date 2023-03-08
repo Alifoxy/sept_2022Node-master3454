@@ -4,7 +4,7 @@ import {User} from "../models/user.model";
 import {IUser} from "../types/user.types";
 import {ICommonResponse} from "../types/common.types";
 import {IMessage} from "../types/common.types";
-try{}catch (e) {next(e);}
+
 class UserController {
      public async getAll(req:Request, res:Response, next: NextFunction): Promise<Response<IUser[]>>{
          try{

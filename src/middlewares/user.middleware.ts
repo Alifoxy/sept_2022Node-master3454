@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
+import { ApiError } from "../errors/api.error";
+import { UserValidator } from "../validators";
 import { User } from "../models/user.model";
 
 class UserMiddleware {
@@ -17,6 +19,58 @@ class UserMiddleware {
                 throw new ApiError("User not found", 404);
             }
 
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
+    public async isUserIdValid(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            if (!isObjectIdOrHexString(req.params.userId)) {
+                throw new ApiError("ID not valid", 400);
+            }
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async isUserValidCreate(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const { error, value } = UserValidator.createUser.validate(req.body);
+
+            if (error) {
+                throw new ApiError(error.message, 400);
+            }
+
+            req.body = value;
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async isUserValidUpdate(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const { error, value } = UserValidator.updateUser.validate(req.body);
+
+            if (error) {
+                throw new ApiError(error.message, 400);
+            }
+
+            req.body = value;
             next();
         } catch (e) {
             next(e);
